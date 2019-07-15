@@ -77,6 +77,8 @@ export interface ActionProperties {
 
 export interface ActionBindOptions {
   readonly role: iam.IRole;
+
+  readonly bucket: s3.IBucket;
 }
 
 export interface ActionConfig {
@@ -111,15 +113,13 @@ export interface IPipeline extends IResource {
    */
   readonly pipelineArn: string;
 
-  readonly artifactBucket: s3.IBucket;
-
   /**
    * Define an event rule triggered by this CodePipeline.
    *
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  onEvent(id: string, options: events.OnEventOptions): events.Rule;
+  onEvent(id: string, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Define an event rule triggered by the "CodePipeline Pipeline Execution
@@ -128,7 +128,7 @@ export interface IPipeline extends IResource {
    * @param id Identifier for this event handler.
    * @param options Additional options to pass to the event rule.
    */
-  onStateChange(id: string, options: events.OnEventOptions): events.Rule;
+  onStateChange(id: string, options?: events.OnEventOptions): events.Rule;
 }
 
 /**
@@ -165,4 +165,22 @@ export interface CommonActionProps {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
    */
   readonly runOrder?: number;
+}
+
+/**
+ * Common properties shared by all Actions whose {@link ActionProperties.owner} field is 'AWS'
+ * (or unset, as 'AWS' is the default).
+ */
+export interface CommonAwsActionProps extends CommonActionProps {
+  /**
+   * The Role in which context's this Action will be executing in.
+   * The Pipeline's Role will assume this Role
+   * (the required permissions for that will be granted automatically)
+   * right before executing this Action.
+   * This Action will be passed into your {@link IAction.bind}
+   * method in the {@link ActionBindOptions.role} property.
+   *
+   * @default a new Role will be generated
+   */
+  readonly role?: iam.IRole;
 }

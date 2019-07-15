@@ -145,7 +145,7 @@ export class Asset extends cdk.Construct implements assets.IAsset {
    * "aws:cdk:enable-asset-metadata" context key defined, which is the default
    * behavior when synthesizing via the CDK Toolkit.
    *
-   * @see https://github.com/awslabs/aws-cdk/issues/1432
+   * @see https://github.com/aws/aws-cdk/issues/1432
    *
    * @param resource The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]
    * @param resourceProperty The property name where this asset is referenced
@@ -158,9 +158,9 @@ export class Asset extends cdk.Construct implements assets.IAsset {
 
     // tell tools such as SAM CLI that the "Code" property of this resource
     // points to a local path in order to enable local invocation of this function.
-    resource.options.metadata = resource.options.metadata || { };
-    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
-    resource.options.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
 
   /**

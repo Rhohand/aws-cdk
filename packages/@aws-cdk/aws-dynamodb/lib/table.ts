@@ -1,6 +1,6 @@
 import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import { Aws, Construct, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Construct, Lazy, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -103,10 +103,18 @@ export interface TableOptions {
 
   /**
    * When an item in the table is modified, StreamViewType determines what information
-   * is written to the stream for this table. Valid values for StreamViewType are:
+   * is written to the stream for this table.
+   *
    * @default undefined, streams are disabled
    */
   readonly stream?: StreamViewType;
+
+  /**
+   * The removal policy to apply to the DynamoDB Table.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 export interface TableProps extends TableOptions {
@@ -247,6 +255,7 @@ export class Table extends Resource {
       streamSpecification: props.stream ? { streamViewType: props.stream } : undefined,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined
     });
+    this.table.applyRemovalPolicy(props.removalPolicy);
 
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
@@ -685,9 +694,9 @@ export enum ProjectionType {
 
 /**
  * When an item in the table is modified, StreamViewType determines what information
- * is written to the stream for this table. Valid values for StreamViewType are:
- * @link https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_StreamSpecification.html
- * @enum {string}
+ * is written to the stream for this table.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_StreamSpecification.html
  */
 export enum StreamViewType {
   /** The entire item, as it appears after it was modified, is written to the stream. */

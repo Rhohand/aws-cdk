@@ -11,6 +11,7 @@ import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
 import { AccountAccessKeyCache } from './account-cache';
 import { SharedIniFile } from './sdk_ini_file';
 
+/** @experimental */
 export interface SDKOptions {
   /**
    * Profile name to use
@@ -44,6 +45,8 @@ export interface SDKOptions {
  *
  * If those don't suffice, a list of CredentialProviderSources is interrogated for access
  * to the requested account.
+ *
+ * @experimental
  */
 export class SDK {
   private readonly defaultAwsAccount: DefaultAWSAccount;
@@ -110,8 +113,8 @@ export class SDK {
     const environment = await this.resolveEnvironment(account, region);
     return new AWS.SSM({
       ...this.retryOptions,
-      region: environment.account,
-      credentials: await this.credentialsCache.get(environment.region, mode)
+      region: environment.region,
+      credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
 
